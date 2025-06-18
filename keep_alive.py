@@ -42,7 +42,7 @@ def send_telegram_message(text):
 
 def is_target_alive():
     try:
-        res = requests.get(KEEP_URL, timeout=10)
+        res = requests.get(ARGO_URL, timeout=10)
         print(f"[{datetime.now()}] {KEEP_URL} 状态码: {res.status_code}")
         return res.status_code != 404
     except Exception as e:
@@ -51,7 +51,7 @@ def is_target_alive():
 
 
 def wake_up():
-    print(f"[⚠️] 检测到离线，尝试唤醒：{ARGO_URL}")
+    print(f"[⚠️] 检测到离线，尝试唤醒：{KEEP_URL}")
 
     chrome_options = Options()
     chrome_options.add_argument("--headless")
