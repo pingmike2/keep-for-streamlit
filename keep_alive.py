@@ -89,10 +89,10 @@ def wake_up():
 # ===== 主循环任务 =====
 def monitor_loop():
     while True:
-        if not is_target_alive():
+        if not is_argo_alive():
             wake_up()
         else:
-            print(f"[✅] {KEEP_URL} 在线")
+            print(f"[✅] Argo 正常在线")
         time.sleep(CHECK_INTERVAL)
 
 
