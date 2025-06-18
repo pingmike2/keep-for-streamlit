@@ -7,8 +7,6 @@ on:
       - 'Dockerfile'
       - 'keep_alive.py'
       - 'requirements.txt'
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -39,9 +37,3 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/hf-keepalive:latest
-          labels: |
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.description=Auto clicker for HuggingFace Argo uptime
-            org.opencontainers.image.licenses=MIT
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
