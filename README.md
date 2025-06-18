@@ -48,7 +48,7 @@
 | `TG_CHAT_ID`   | `你的Telegram用户ID（可选）`                 |
 | `CHECK_INTERVAL` | `300`（单位：秒）                         |
 
----
+
 
 ## 🔧 示例变量说明
 
@@ -59,9 +59,12 @@ TG_BOT_TOKEN=123456789:ABC...                # Telegram Bot Token（可选）
 TG_CHAT_ID=123456789                         # Telegram 用户 ID（可选）
 CHECK_INTERVAL=300                           # 检测频率（单位：秒）
 
+```
+
+
 ---
 
-📦 运行效果
+##📦 运行效果
 	•	https://your-space.hf.space 被定时点击“唤醒”按钮
 	•	首页访问显示 Hello, world. 防止休眠
 	•	Argo 掉线后自动重启流量隧道，确保服务外部可用
