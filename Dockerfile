@@ -15,5 +15,5 @@ WORKDIR /app
 COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 启动 gunicorn 和监控线程
-CMD ["bash", "-c", "python monitor.py & gunicorn --bind 0.0.0.0:7860 app:app"]
+# ✅ 强制指定入口点，避免 HF 默认运行 app.py
+ENTRYPOINT ["bash", "-c", "python monitor.py & gunicorn --bind 0.0.0.0:7860 app:app"]
