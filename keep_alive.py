@@ -43,7 +43,7 @@ def send_telegram_message(text):
 def is_argo_alive():
     try:
         res = requests.get(ARGO_URL, timeout=10)
-        print(f"[{datetime.now()}] {KEEP_URL} 状态码: {res.status_code}")
+        print(f"[{datetime.now()}] {ARGO_URL} 状态码: {res.status_code}")
         return res.status_code != 404
     except Exception as e:
         print(f"[检测失败] {e}")
