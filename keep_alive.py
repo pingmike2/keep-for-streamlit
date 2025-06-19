@@ -1,4 +1,8 @@
 import os
+
+# 🧹 设置可写的缓存目录，避免权限警告
+os.environ["SELENIUM_MANAGER_CACHE_DIR"] = "/tmp/.selenium"
+
 import time
 import threading
 import requests
