@@ -40,7 +40,7 @@ def send_telegram_message(text):
             print(f"[Telegram] 发送失败: {e}")
 
 
-def is_target_alive():
+def is_argo_alive():
     try:
         res = requests.get(ARGO_URL, timeout=10)
         print(f"[{datetime.now()}] {KEEP_URL} 状态码: {res.status_code}")
