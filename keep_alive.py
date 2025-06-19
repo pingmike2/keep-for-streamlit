@@ -1,8 +1,4 @@
 import os
-
-# 🧹 设置可写的缓存目录，避免权限警告
-os.environ["SELENIUM_MANAGER_CACHE_DIR"] = "/tmp/.selenium"
-
 import time
 import threading
 import requests
@@ -62,6 +58,10 @@ def wake_up():
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+
+    # 显式指定 ChromeDriver 路径，避免使用 selenium-manager 缓存
+    service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver"))
+    driver = webdriver.Chrome(service=service, options=chrome_options)
 
     try:
         driver = webdriver.Chrome(options=chrome_options)
