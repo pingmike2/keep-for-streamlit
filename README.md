@@ -57,7 +57,7 @@ KEEP_URL=https://your-space.hf.space         # 用于点击按钮的 Hugging Fac
 ARGO_URL=https://argo-tunnel.trycloudflare.com  # 被检测是否在线的 Argo 隧道地址
 TG_BOT_TOKEN=123456789:ABC...                # Telegram Bot Token（可选）
 TG_CHAT_ID=123456789                         # Telegram 用户 ID（可选）
-CHECK_INTERVAL=300                           # 检测频率（单位：秒）
+CHECK_INTERVAL=300                           # 检测频率（单位：秒），默认300秒，（可选）
 
 ```
 
