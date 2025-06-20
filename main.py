@@ -11,7 +11,8 @@ from selenium.webdriver.chrome.service import Service
 
 # 🧹 避免权限错误
 os.environ["SELENIUM_MANAGER_CACHE_DIR"] = "/tmp/.selenium"
-
+os.environ["TZ"] = "Asia/Shanghai"
+time.tzset()
 # ==== 环境变量 ====
 KEEP_URL = os.getenv("KEEP_URL", "")
 ARGO_URL = os.getenv("ARGO_URL", "")
