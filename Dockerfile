@@ -9,6 +9,10 @@ RUN apt-get update && apt-get install -y \
 ENV SELENIUM_MANAGER_CACHE_DIR=/tmp/.selenium
 RUN mkdir -p /tmp/.selenium
 
+# 设置时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # 复制代码
 WORKDIR /app
 COPY requirements.txt .
