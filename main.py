@@ -8,6 +8,16 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
+from uuid import uuid4
+import glob
+import shutil
+
+# 清理旧的临时目录
+for path in glob.glob("/tmp/chrome-data-*"):
+    try:
+        shutil.rmtree(path)
+    except:
+         pass
 
 # 🧹 避免权限错误 + 设置时区
 os.environ["SELENIUM_MANAGER_CACHE_DIR"] = "/tmp/.selenium"
