@@ -25,7 +25,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Hello, world. 保活中。"
+    return "Hello, world"
 
 def run_flask():
     app.run(host="0.0.0.0", port=7860)
