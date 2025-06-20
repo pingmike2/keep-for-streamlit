@@ -5,8 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'Dockerfile'
-      - 'monitor.py'
-      - 'app.py'
+      - 'main.py'
       - 'requirements.txt'
   workflow_dispatch:
 
