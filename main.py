@@ -52,54 +52,55 @@ def send_telegram_message(text):
         except Exception as e:
             print(f"[Telegram] 发送失败: {e}")
 
-# ==== 唤醒逻辑 ====
 def wake_up_if_needed():
     print(f"[{datetime.now()}] 🔍 正在访问 {KEEP_URL} 检查状态...")
+
+    # 生成唯一目录（如 /tmp/chrome-data-8f6a7d12）
+    unique_user_data_dir = f"/tmp/chrome-data-{uuid4()}"
+    os.makedirs(unique_user_data_dir, exist_ok=True)
 
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument(f"--user-data-dir={unique_user_data_dir}")
 
     try:
         service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver"))
         driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.get(KEEP_URL)
 
-        # 检测 iframe 并切入（HuggingFace 常见）
         iframes = driver.find_elements(By.TAG_NAME, "iframe")
         if iframes:
             driver.switch_to.frame(iframes[0])
             print(f"已进入 iframe")
 
-        # 尝试点击“get this app back up”
         back_buttons = driver.find_elements(By.XPATH, "//button[contains(., 'get this app back up')]")
         if not back_buttons:
             print("页面正常，无需唤醒。")
             driver.quit()
+            shutil.rmtree(unique_user_data_dir, ignore_errors=True)
             return
 
-        # 点击 “get this app back up”
         back_buttons[0].click()
         print("已点击 get this app back up，等待 30 秒恢复...")
         time.sleep(30)
 
-        # 再次点击 “启动部署”
         deploy_buttons = driver.find_elements(By.XPATH, "//button[contains(., '启动部署')]")
         if deploy_buttons:
             deploy_buttons[0].click()
             print("已点击启动部署 ✅")
-
-            # 两个都成功后发通知
             send_telegram_message(f"✅ <b>{KEEP_URL}</b> 已点击唤醒并启动部署成功")
         else:
             print("❌ 找不到启动部署按钮")
-        driver.quit()
 
+        driver.quit()
     except Exception as e:
         print(f"[Selenium 错误] {e}")
         send_telegram_message(f"❌ <b>{KEEP_URL}</b> Selenium 错误：<code>{str(e)}</code>")
+    finally:
+        shutil.rmtree(unique_user_data_dir, ignore_errors=True)
 
 # ==== 主监控线程（定时执行）====
 def monitor_loop():
