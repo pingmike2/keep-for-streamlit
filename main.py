@@ -93,7 +93,7 @@ def wake_up_if_needed():
 
 # ==== 主监控线程（定时执行）====
 def monitor_loop():
-    print("===== 开始每 30 分钟自动检测 Hugging Face 页面状态 =====")
+    print("===== 开始每 30 分钟自动检测 streamlit 页面状态 =====")
     while True:
         wake_up_if_needed()
         time.sleep(CHECK_INTERVAL)
