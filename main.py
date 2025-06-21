@@ -13,7 +13,7 @@ import glob
 import shutil
 
 # ==== 环境变量 ====
-KEEP_URL = os.getenv("KEEP_URL", "https://onlyno999.streamlit.app/")
+KEEP_URL = os.getenv("KEEP_URL", "")
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
 TG_CHAT_ID = os.getenv("TG_CHAT_ID")
 CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL", "600"))  # 每 10 分钟检查一次
