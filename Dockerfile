@@ -1,24 +1,21 @@
 FROM python:3.10-slim
 
-# 安装 Chrome 和 chromedriver
-RUN apt-get update && apt-get install -y \
-    wget unzip gnupg curl chromium chromium-driver \
-    && apt-get clean
+# 安装依赖
+RUN apt update && apt install -y \
+    wget curl unzip chromium chromium-driver \
+    && rm -rf /var/lib/apt/lists/*
 
-# 设置缓存目录权限
-ENV SELENIUM_MANAGER_CACHE_DIR=/tmp/.selenium
-RUN mkdir -p /tmp/.selenium
-
-# 设置时区
+# 环境变量配置
 ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
-# 复制代码
+# 安装 Python 库
+COPY requirements.txt /app/requirements.txt
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py .
+# 拷贝代码
+COPY main.py /app/main.py
 
-# 设置执行命令
-ENTRYPOINT ["python", "main.py"]
+# 启动入口
+CMD ["python", "main.py"]
