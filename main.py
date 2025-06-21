@@ -12,14 +12,14 @@ from uuid import uuid4
 import glob
 import shutil
 
-# 清理旧的临时目录
+# ==== 清理旧的临时目录 ====
 for path in glob.glob("/tmp/chrome-data-*"):
     try:
         shutil.rmtree(path)
     except:
-         pass
+        pass
 
-# 🧹 避免权限错误 + 设置时区
+# ==== 避免权限错误 + 设置时区 ====
 os.environ["SELENIUM_MANAGER_CACHE_DIR"] = "/tmp/.selenium"
 os.environ["TZ"] = "Asia/Shanghai"
 time.tzset()
@@ -28,14 +28,14 @@ time.tzset()
 KEEP_URL = os.getenv("KEEP_URL", "")
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
 TG_CHAT_ID = os.getenv("TG_CHAT_ID")
-CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL", "1800"))  # 默认30分钟
+CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL", "600"))  # 改成每 10 分钟检查一次
 
 # ==== Flask Web 保活 ====
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Hello, world"
+    return "App is running."
 
 def run_flask():
     app.run(host="0.0.0.0", port=7860)
@@ -52,65 +52,65 @@ def send_telegram_message(text):
         except Exception as e:
             print(f"[Telegram] 发送失败: {e}")
 
+# ==== 唤醒逻辑 ====
 def wake_up_if_needed():
-    print(f"[{datetime.now()}] 🔍 正在访问 {KEEP_URL} 检查状态...")
+    print(f"[{datetime.now()}] 🔍 正在检测 {KEEP_URL} 状态...")
 
-    # 生成唯一目录（如 /tmp/chrome-data-8f6a7d12）
-    unique_user_data_dir = f"/tmp/chrome-data-{uuid4()}"
-    os.makedirs(unique_user_data_dir, exist_ok=True)
+    # 创建临时配置目录
+    user_data_dir = f"/tmp/chrome-data-{uuid4()}"
+    os.makedirs(user_data_dir, exist_ok=True)
 
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument(f"--user-data-dir={unique_user_data_dir}")
+    chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
 
     try:
         service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver"))
         driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.get(KEEP_URL)
 
+        # 切入 iframe（Hugging Face 页面可能在 iframe 中）
         iframes = driver.find_elements(By.TAG_NAME, "iframe")
         if iframes:
             driver.switch_to.frame(iframes[0])
-            print(f"已进入 iframe")
+            print("✅ 已切入 iframe")
 
-        back_buttons = driver.find_elements(By.XPATH, "//button[contains(., 'get this app back up')]")
-        if not back_buttons:
-            print("页面正常，无需唤醒。")
-            driver.quit()
-            shutil.rmtree(unique_user_data_dir, ignore_errors=True)
-            return
+        # 检测按钮
+        wake_btns = driver.find_elements(By.XPATH, "//button[contains(text(), 'get this app back up')]")
+        if wake_btns:
+            wake_btns[0].click()
+            print("✅ 已点击 get this app back up 按钮，等待 30 秒...")
+            time.sleep(30)
 
-        back_buttons[0].click()
-        print("已点击 get this app back up，等待 30 秒恢复...")
-        time.sleep(30)
-
-        deploy_buttons = driver.find_elements(By.XPATH, "//button[contains(., '启动部署')]")
-        if deploy_buttons:
-            deploy_buttons[0].click()
-            print("已点击启动部署 ✅")
-            send_telegram_message(f"✅ <b>{KEEP_URL}</b> 已点击唤醒并启动部署成功")
+            deploy_btns = driver.find_elements(By.XPATH, "//button[contains(text(), '启动部署')]")
+            if deploy_btns:
+                deploy_btns[0].click()
+                print("✅ 已点击启动部署")
+                send_telegram_message(f"✅ <b>{KEEP_URL}</b>\n已点击唤醒并启动部署成功")
+            else:
+                print("⚠️ 唤醒后未找到启动部署按钮")
         else:
-            print("❌ 找不到启动部署按钮")
+            print("ℹ️ 页面正常，无需操作。")
 
         driver.quit()
     except Exception as e:
         print(f"[Selenium 错误] {e}")
-        send_telegram_message(f"❌ <b>{KEEP_URL}</b> Selenium 错误：<code>{str(e)}</code>")
+        send_telegram_message(f"❌ <b>{KEEP_URL}</b>\nSelenium 错误：<code>{str(e)}</code>")
     finally:
-        shutil.rmtree(unique_user_data_dir, ignore_errors=True)
+        shutil.rmtree(user_data_dir, ignore_errors=True)
 
-# ==== 主监控线程（定时执行）====
+# ==== 定时监控线程 ====
 def monitor_loop():
-    print("===== 开始每 30 分钟自动检测 streamlit 页面状态 =====")
+    print(f"⏰ 每 {CHECK_INTERVAL} 秒检测一次 Streamlit 页面状态")
     while True:
         wake_up_if_needed()
         time.sleep(CHECK_INTERVAL)
 
-# ==== 启动 Flask + 监控线程 ====
+# ==== 启动应用 ====
 if __name__ == "__main__":
-    print("===== 应用启动，开启 Flask + 监控线程 =====")
+    print("🚀 启动 Flask + 监控线程")
     threading.Thread(target=monitor_loop, daemon=True).start()
     run_flask()
